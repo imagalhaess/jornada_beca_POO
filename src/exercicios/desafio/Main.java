@@ -1,3 +1,4 @@
+/*
 public class Main {
     public static void main(String[] args){
         Musicas musicas = new Musicas("Povoada", 3,
@@ -16,3 +17,4 @@ public class Main {
 
     }
 }
+*/
