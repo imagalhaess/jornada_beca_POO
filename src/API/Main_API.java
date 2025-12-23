@@ -4,13 +4,21 @@ package API;
 import API.exceptions.ErroConsultaGitHubException;
 import API.exceptions.InvalidDivisor;
 import API.exceptions.InvalidPassword;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import exercicios.listas.Titulo;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main_API {
@@ -98,24 +106,48 @@ public class Main_API {
 //        } catch (InvalidPassword e){
 //            System.out.println(e.getMessage());
 //        }
-        try {
+        String user = "";
+        List<User> users = new ArrayList<>();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        while (!user.equalsIgnoreCase("sair")) {
+
             System.out.println("Digite o user do usuário desejado para a busca: ");
-            String user = input.nextLine();
-            String addressGit = "https://api.github.com/users/" + user;
-            HttpClient clientGit = HttpClient.newHttpClient();
-            HttpRequest requestGit = HttpRequest.newBuilder()
-                    .uri(URI.create(addressGit))
-                    .build();
-            HttpResponse<String> responseGit = clientGit
-                    .send(requestGit, HttpResponse.BodyHandlers.ofString());
-            if (responseGit.statusCode() == 404) {
-                throw new ErroConsultaGitHubException("Erro 404. Usuário não encontrado." +
-                                                              " Tente novamente.");
+            user = input.nextLine();
+
+            if (user.equalsIgnoreCase("sair")) {
+                break;
             }
-            System.out.println(responseGit.body());
-        } catch (ErroConsultaGitHubException e){
-            System.out.println(e.getMessage());
+            String addressGit = "https://api.github.com/users/" + user;
+            try {
+                HttpClient clientGit = HttpClient.newHttpClient();
+                HttpRequest requestGit = HttpRequest.newBuilder()
+                        .uri(URI.create(addressGit))
+                        .build();
+                HttpResponse<String> responseGit = clientGit
+                        .send(requestGit, HttpResponse.BodyHandlers.ofString());
+                if (responseGit.statusCode() == 404) {
+                    throw new ErroConsultaGitHubException("Erro 404. Usuário não encontrado." +
+                                                                  " Tente novamente.");
+                }
+                String json = responseGit.body();
+                System.out.println(json);
+                User myUser = gson.fromJson(json, User.class);
+                System.out.println(myUser);
+
+                users.add(myUser);
+            } catch (ErroConsultaGitHubException e) {
+                System.out.println(e.getMessage());
+            }
         }
+        FileWriter writer = new FileWriter("user.json");
+        writer.write(gson.toJson(users));
+        writer.close();
+        System.out.println(users);
         input.close();
+        System.out.println("Programada finalizado.");
+        System.out.println("Total de usuários coletados: " + users.size());
+        System.out.println("Conteúdo: " + users);
+
+
     }
 }
