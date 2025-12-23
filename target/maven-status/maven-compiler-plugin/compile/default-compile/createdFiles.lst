@@ -1,0 +1,5 @@
+br\com\imagalhaess\viacep\models\Dados.class
+br\com\imagalhaess\viacep\exceptions\InvalidParameter.class
+br\com\imagalhaess\viacep\exceptions\CepNotFound.class
+br\com\imagalhaess\viacep\MainViaCep.class
+br\com\imagalhaess\viacep\services\ViaCepService.class

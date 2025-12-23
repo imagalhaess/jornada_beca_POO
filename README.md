@@ -1,71 +1,131 @@
-# Exercícios de POO em Java
+# ViaCEP API Client
 
-Repositório com exercícios práticos de Programação Orientada a Objetos desenvolvidos durante os estudos de Java.
+[![Java](https://img.shields.io/badge/Java-17-blue.svg)](https://www.oracle.com/java/)
+[![Maven](https://img.shields.io/badge/Maven-3.9-orange.svg)](https://maven.apache.org/)
 
-## 👩‍💻 Autora
+Aplicação console em Java que consulta endereços via API ViaCEP usando arquitetura limpa com SRP (Single Responsibility
+Principle).
 
-**Isabela Magalhães**  
-Java Backend Developer Jr @ NTT Data
+## ✨ Funcionalidades
 
-## 📚 Conteúdo
+* ✅ Consulta CEP por API ViaCEP
+* ✅ Validação rigorosa (8 dígitos numéricos)
+* ✅ 4 tipos de tratamento de erro específico:
+    * `InvalidParameter` - Formato inválido
+    * `CepNotFound` - CEP não cadastrado
+    * `IOException` - Problemas de rede
+    * `InterruptedException` - Requisição interrompida
+* ✅ Loop interativo com `Scanner`
+* ✅ Saída formatada com `toString()` customizado
+* ✅ Arquitetura limpa: `Main` + `Service` + `Model` + `Exceptions`
 
-### 1. Exercícios de Herança
+## 📱 Como usar
 
-Exploração de conceitos de herança, extends, @Override e polimorfismo:
+```bash
+# Clone o projeto
+git clone https://github.com/imagalhaess/viacep-java.git
+cd viacep-java
 
-- **Carro e ModeloCarro**: Classe com cálculo de preços ao longo dos anos
-- **Animal, Cachorro e Gato**: Sobrescrita de métodos com comportamentos específicos
-- **ContaBancaria e ContaCorrente**: Operações bancárias com taxas
-- **NumerosPrimos**: Verificação e geração de números primos
+# Execute
+mvn clean compile exec:java -Dexec.mainClass="br.com.imagalhaess.viacep.MainViaCep"
+```
 
-### 2. Exercícios de Interfaces
+**Exemplo de uso:**
 
-Implementação de interfaces e polimorfismo:
+```text
+****** INICIANDO PROGRAMA ******
+Digite o número do CEP para a busca ou 'sair' para encerrar.
 
-- **ConversaoFinanceira**: Conversor de moedas (Dólar → Real)
-- **CalculoGeometrico**: Cálculo de área e perímetro de sala retangular
-- **Tabuada**: Gerador de tabuada de multiplicação
-- **ConversorTemperatura**: Conversão Celsius ↔ Fahrenheit
-- **Calculavel**: Cálculo de preço final com descontos/taxas
-- **Vendavel**: Cálculo de preço total por quantidade com descontos
+> 01001000
+✅ Dados{cep='01001-000', logradouro='Praça da Sé - Centro - São Paulo', bairro='Sé', estado='SP', erro=false}
 
-### 3. Desafio: Sistema de Áudios
+> 99999999
+❌ CEP não encontrado no nosso banco de dados.
 
-Aplicação de músicas e podcasts aplicando encapsulamento, herança e polimorfismo:
+> abc
+❌ O CEP deve ter um total de 08 dígitos e conter apenas números de 0 a 9.
 
-- **Audio** (superclasse): Atributos e métodos comuns
-- **Musicas**: Música com artista, álbum e gênero
-- **Podcasts**: Podcast com apresentador e episódio
+> sair
+****** FINALIZANDO PROGRAMA ******
+```
 
-Funcionalidades:
+## 🏗️ Arquitetura
 
-- ✅ Reproduzir áudio
-- ✅ Curtir áudio
-- ✅ Calcular classificação baseada em reproduções
-- ✅ Exibir detalhes
+```text
+br.com.imagalhaess.viacep/
+├── MainViaCep.java          # Interface usuário (Scanner + while)
+├── services/
+│   └── ViaCepService.java   # HTTP + Gson + Validações
+├── models/
+│   └── Dados.java           # Record com toString()
+└── exceptions/
+    ├── InvalidParameter.java
+    └── CepNotFound.java
+```
 
 ## 🛠️ Tecnologias
 
-- Java 17
-- IntelliJ IDEA
-- Git
+| Tecnologia | Versão | Uso |
+|------------|--------|-----|
+| Java | 17+ | Backend |
+| Maven | 3.9+ | Dependências |
+| Gson | 2.10+ | JSON |
+| HttpClient | Java 11+ | Requisições HTTP |
 
-## 🚀 Como executar
+## 📋 Dependências Maven
 
-1. Clone o repositório
-2. Abra no IntelliJ IDEA
-3. Execute a classe `Main` de cada exercício
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.10.1</version>
+    </dependency>
+</dependencies>
+```
 
-## 📖 Conceitos aplicados
+## 🎯 Aprendizado demonstrado
 
-- Encapsulamento (private, protected, public)
-- Herança (extends, super)
-- Polimorfismo
-- Interfaces (implements)
-- Sobrescrita de métodos (@Override)
-- Construtores
-- Getters e Setters
+* ✅ OOP: Encapsulamento, exceções customizadas
+* ✅ SRP: Separação clara de responsabilidades
+* ✅ HTTP Client: Requisições assíncronas seguras
+* ✅ JSON: Parsing com Gson
+* ✅ Tratamento de erro: Exceções granulares
+* ✅ Arquitetura limpa: Camadas bem definidas
+
+## 🧪 Casos de teste implementados
+
+| Teste | Entrada | Saída esperada |
+|-------|---------|----------------|
+| ✅ CEP válido | `01001000` | Endereço completo |
+| ✅ CEP inexistente | `99999999` | `CepNotFound` |
+| ✅ Formato inválido | `abc` | `InvalidParameter` |
+| ✅ Saída do programa | `sair` | Encerra sem erro |
+
+## 📄 API ViaCEP
+
+* **Endpoint:** `https://viacep.com.br/ws/{CEP}/json/`
+* **Formato:** Apenas 8 dígitos numéricos
+* **Resposta erro:** `{"erro": "true"}`
+
+## 🚀 Próximos passos planejados
+
+* 🔄 Spring Boot REST API
+* 🎨 Frontend React
+* 💾 Banco PostgreSQL (cache)
+* 🐳 Docker
+* ✅ Testes unitários (JUnit)
+
+## 📝 Autora
+
+Desenvolvido por **Isabela Magalhães**
+
+👩‍💻 Desenvolvedora Java Jr | Backend Developer  
+💼 [LinkedIn](https://www.linkedin.com/in/isabela-magalhaes-se) | 💻 [GitHub](https://github.com/imagalhaess)
 
 ---
 
-💡 **Exercícios desenvolvidos como parte do curso de Java da NTT Data**
+<div align="center">
+  <img src="https://img.shields.io/badge/version-1.0.0-green.svg" alt="Version">
+  <img src="https://img.shields.io/badge/status-developing-blue.svg" alt="Status">
+</div>
