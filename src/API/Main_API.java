@@ -1,9 +1,15 @@
 package API;
 
 
+import API.exceptions.ErroConsultaGitHubException;
 import API.exceptions.InvalidDivisor;
+import API.exceptions.InvalidPassword;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -61,26 +67,55 @@ public class Main_API {
 //        Gson gsonLivro = new Gson();
 //        Livro livro = gsonLivro.fromJson(jsonLivro, Livro.class);
 //        System.out.println(livro)
+//        try {
+//            System.out.println("Digite o primeiro número: ");
+//        int n1 = input.nextInt();
+//        System.out.println("Digite o segundo número: ");
+//        int n2 = input.nextInt();
+//        if (n2 == 0) {
+//            throw new InvalidDivisor("Não se pode dividir por zero. Reinicie " +
+//                                             " o programa e tente novamente.");
+//        }
+//        var divisao = n1 / n2;
+//        if (n1 % n2 != 0){
+//            System.out.println("O resultado foi truncado. Decimais ocultos.");
+//        }
+//        System.out.println(divisao);
+//        } catch (InvalidDivisor e){
+//            System.out.println(e.getMessage());
+//        }
+//        catch (InputMismatchException e) {
+//            System.out.println("Dígito inválido. Reinicie o programa e tente novamente.");
+//        }
+//        System.out.println("Programa finalizado.");
+//        try {
+//            System.out.println("Digite sua senha: ");
+//            String password = input.nextLine();
+//            if (password.length() < 10){
+//                throw new InvalidPassword("Senha inválida. Reinicie o programa" +
+//                                                  " e tente novamente. Utilize 10 caracteres.");
+//            }
+//        } catch (InvalidPassword e){
+//            System.out.println(e.getMessage());
+//        }
         try {
-            System.out.println("Digite o primeiro número: ");
-        int n1 = input.nextInt();
-        System.out.println("Digite o segundo número: ");
-        int n2 = input.nextInt();
-        if (n2 == 0) {
-            throw new InvalidDivisor("Não se pode dividir por zero. Reinicie " +
-                                             " o programa e tente novamente.");
-        }
-        var divisao = n1 / n2;
-        if (n1 % n2 != 0){
-            System.out.println("O resultado foi truncado. Decimais ocultos.");
-        }
-        System.out.println(divisao);
-        } catch (InvalidDivisor e){
+            System.out.println("Digite o user do usuário desejado para a busca: ");
+            String user = input.nextLine();
+            String addressGit = "https://api.github.com/users/" + user;
+            HttpClient clientGit = HttpClient.newHttpClient();
+            HttpRequest requestGit = HttpRequest.newBuilder()
+                    .uri(URI.create(addressGit))
+                    .build();
+            HttpResponse<String> responseGit = clientGit
+                    .send(requestGit, HttpResponse.BodyHandlers.ofString());
+            if (responseGit.statusCode() == 404) {
+                throw new ErroConsultaGitHubException("Erro 404. Usuário não encontrado." +
+                                                              " Tente novamente.");
+            }
+            System.out.println(responseGit.body());
+        } catch (ErroConsultaGitHubException e){
             System.out.println(e.getMessage());
         }
-        catch (InputMismatchException e) {
-            System.out.println("Dígito inválido. Reinicie o programa e tente novamente.");
-        }
-        System.out.println("Programa finalizado.");
+        input.close();
     }
 }
